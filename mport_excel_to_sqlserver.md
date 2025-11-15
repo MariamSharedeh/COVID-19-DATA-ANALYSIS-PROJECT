@@ -1,3 +1,5 @@
+Procédure complète : importer un fichier Excel (.xlsx) dans SQL Server avec OPENROWSET
+
 1️⃣ — Préparer SQL Server et l’environnement
  Étape 1 : Vérifier la version de SQL Server
 SELECT @@VERSION;
@@ -68,3 +70,41 @@ HDR=YES	Première ligne = noms de colonnes
 [CovidVaccinations$]	Nom exact de la feuille Excel (avec $)
 5️⃣ — Vérifier que l’import a réussi
 SELECT TOP 10 * FROM CovidVaccinations;
+
+
+
+
+
+
+USE master;
+GO
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'AllowInProcess', 1;
+GO
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'DynamicParameters', 1;
+GO
+
+USE master;
+GO
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'AllowInProcess', 1;
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'DynamicParameters', 1;
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.16.0', N'AllowInProcess', 1;
+EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.16.0', N'DynamicParameters', 1;
+GO
+
+
+-- Autoriser les options avancées
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+
+-- Activer les requêtes ad hoc distribuées
+EXEC sp_configure 'Ad Hoc Distributed Queries', 1;
+RECONFIGURE;
+
+-- Vérifier si c’est bien activé
+EXEC sp_configure 'Ad Hoc Distributed Queries';
+
+
+SELECT * INTO CovidVaccinations
+FROM OPENROWSET('Microsoft.ACE.OLEDB.16.0',
+   'Excel 12.0;Database=C:\Users\maria\Desktop\CovidVaccinations.xlsx;HDR=YES',
+   'SELECT * FROM [CovidVaccinations$]');
