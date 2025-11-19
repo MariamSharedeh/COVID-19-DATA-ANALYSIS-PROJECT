@@ -35,8 +35,8 @@ RECONFIGURE;
 EXEC sp_configure 'Ad Hoc Distributed Queries', 1;
 RECONFIGURE;
 
-Étape 5 : Autoriser le fournisseur OLEDB à s’exécuter dans le processus
-USE master;
+Étape 5 : Autoriser le fournisseur OLEDB à s’exécuter dans le processus en mode admin
+
 GO
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'AllowInProcess', 1;
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'DynamicParameters', 1;
@@ -48,13 +48,7 @@ GO
  Pense à redémarrer le service SQL Server (SQLEXPRESS) via services.msc.
 
  3️⃣ — Préparer le fichier Excel
-Étape 6 : Vérifier le fichier
-Élément	Détail
-Nom du fichier	CovidVaccinations.xlsx
-Emplacement	C:\Users\maria\Desktop\CovidVaccinations.xlsx
-Feuille	CovidVaccinations (et non Sheet1)
-Première ligne	Contient les noms de colonnes (iso_code, continent, etc.)
-⚠️ Important	Le fichier doit être fermé avant l’import.
+
  4️⃣ — Importer les données avec OPENROWSET
 Étape 7 : Exécuter la commande SQL
 SELECT * INTO CovidVaccinations
@@ -62,28 +56,21 @@ FROM OPENROWSET('Microsoft.ACE.OLEDB.16.0',
    'Excel 12.0;Database=C:\Users\maria\Desktop\CovidVaccinations.xlsx;HDR=YES',
    'SELECT * FROM [CovidVaccinations$]');
 
-Détails :
-Élément	Explication
-Microsoft.ACE.OLEDB.16.0	Pilote Excel
-Excel 12.0	Format .xlsx
-HDR=YES	Première ligne = noms de colonnes
-[CovidVaccinations$]	Nom exact de la feuille Excel (avec $)
-5️⃣ — Vérifier que l’import a réussi
-SELECT TOP 10 * FROM CovidVaccinations;
 
 
 
 
 
 
-USE master;
+
+
 GO
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'AllowInProcess', 1;
 GO
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'DynamicParameters', 1;
 GO
 
-USE master;
+
 GO
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'AllowInProcess', 1;
 EXEC sp_MSset_oledb_prop N'Microsoft.ACE.OLEDB.12.0', N'DynamicParameters', 1;
